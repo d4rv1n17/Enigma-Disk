@@ -1,0 +1,61 @@
+name: Release
+
+# Собирает установщик и портативную версию и публикует их в GitHub Releases.
+# Запускается при пуше тега вида v1.2.0 или вручную во вкладке Actions.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to release (e.g. v1.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Build app (self-contained single file)
+        run: >
+          dotnet publish EnigmaDisk.csproj -c Release -r win-x64 --self-contained true
+          -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true -p:DebugType=none -o dist/app
+
+      - name: Build installer
+        run: dotnet build Setup/EnigmaDiskSetup.csproj -c Release -o Setup/out
+
+      - name: Collect files
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force release | Out-Null
+          Copy-Item Setup/out/EnigmaDiskSetup.exe release/EnigmaDiskSetup.exe
+          Copy-Item dist/app/EnigmaDisk.exe release/EnigmaDisk-portable.exe
+          Get-ChildItem release/*.exe | ForEach-Object {
+            "{0}  {1}" -f (Get-FileHash $_ -Algorithm SHA256).Hash.ToLower(), $_.Name
+          } | Set-Content release/SHA256SUMS.txt
+          Get-Content release/SHA256SUMS.txt
+
+      - name: Publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $notes = Get-Content .github/release-notes.md -Raw
+          gh release view $env:TAG 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            gh release upload $env:TAG release/EnigmaDiskSetup.exe release/EnigmaDisk-portable.exe release/SHA256SUMS.txt --clobber
+          } else {
+            gh release create $env:TAG release/EnigmaDiskSetup.exe release/EnigmaDisk-portable.exe release/SHA256SUMS.txt `
+              --title "Enigma Disk $($env:TAG.TrimStart('v'))" --notes $notes
+          }
