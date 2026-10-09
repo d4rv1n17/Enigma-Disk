@@ -18,6 +18,10 @@ WizTree и WinDirStat показывают, что лежит на диске с
 
 Все данные хранятся локально в `%LOCALAPPDATA%\EnigmaDisk`. В интернет ничего не отправляется.
 
+## Скачать
+**[⬇ EnigmaDiskSetup.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDiskSetup.exe)** — установщик последней версии.
+Без установки: [EnigmaDisk-portable.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDisk-portable.exe).
+
 ## Сборка
 Нужен .NET 10 SDK.
 

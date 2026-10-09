@@ -48,7 +48,8 @@ Tools like WizTree or WinDirStat show what is on the disk **right now**. Enigma 
 
 ## Install
 
-Download `EnigmaDiskSetup.exe` from [Releases](../../releases) and run it.
+**[⬇ Download EnigmaDiskSetup.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDiskSetup.exe)** (latest release) and run it.
+All versions are on the [Releases](../../releases) page.
 
 - Installs for the current user to `%LOCALAPPDATA%\Programs\Enigma Disk` — **no administrator rights needed**.
 - Adds Start menu and (optionally) desktop shortcuts.
@@ -58,7 +59,7 @@ Download `EnigmaDiskSetup.exe` from [Releases](../../releases) and run it.
 > The executable is not code-signed yet, so Windows SmartScreen may show
 > “Windows protected your PC”. Click **More info → Run anyway**.
 
-A portable `EnigmaDisk.exe` that needs no installation is also produced by the build (see below).
+Prefer no installation? Grab [EnigmaDisk-portable.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDisk-portable.exe) instead.
 
 **Requirements:** Windows 10 or 11, 64-bit. The app is self-contained, no .NET installation required.
 
@@ -74,6 +75,12 @@ You need the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 The installer lives in the `Setup` folder. It targets .NET Framework 4.8, which ships with Windows 10 and 11,
 so it adds only ~90 KB on top of the app it carries inside.
+
+## Releasing a new version
+
+Bump `<Version>` in `EnigmaDisk.csproj` and `Setup/EnigmaDiskSetup.csproj` (and `Installer.Version`), then run the **Release** workflow
+from the Actions tab with a new tag such as `v1.2.0`, or push that tag. GitHub builds the installer and the portable exe
+and attaches them to the release together with `SHA256SUMS.txt`.
 
 ## Command line
 
