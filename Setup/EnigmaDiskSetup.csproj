@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Установщик на .NET Framework 4.8: он уже есть в Windows 10 и 11,
+       поэтому сам установщик весит мало, а внутри лежит готовый EnigmaDisk.exe. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net48</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>EnigmaDiskSetup</AssemblyName>
+    <RootNamespace>EnigmaDiskSetup</RootNamespace>
+    <Product>Enigma Disk Setup</Product>
+    <Version>1.1.0</Version>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\Assets\icon.ico</ApplicationIcon>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <DebugType>none</DebugType>
+    <!-- путь к собранной программе, которую вшиваем внутрь -->
+    <PayloadPath Condition="'$(PayloadPath)' == ''">..\dist\app\EnigmaDisk.exe</PayloadPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Page Include="..\Theme.xaml" Link="Theme.xaml" />
+    <Resource Include="..\Assets\icon.png" Link="Assets\icon.png" />
+    <EmbeddedResource Include="$(PayloadPath)" LogicalName="payload.exe" />
+  </ItemGroup>
+
+</Project>

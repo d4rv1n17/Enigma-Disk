@@ -1,0 +1,103 @@
+<UserControl x:Class="EnigmaDisk.Pages.CleanupPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <DataTemplate x:Key="CleanItem">
+            <Border Style="{StaticResource Card}" Margin="0,0,0,10" Padding="20,16">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="130" />
+                    </Grid.ColumnDefinitions>
+                    <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}" IsEnabled="{Binding IsAvailable}"
+                              VerticalAlignment="Center" Margin="0,0,16,0" Click="Check_Click" />
+                    <Border Grid.Column="1" Style="{StaticResource IconTile}" Margin="0,0,16,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Icon}" Style="{StaticResource Icon}" Foreground="{StaticResource MutedBrush}" HorizontalAlignment="Center" />
+                    </Border>
+                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold" />
+                            <Border Style="{StaticResource Chip}" Margin="10,0,0,0" Visibility="{Binding AdminVisibility}">
+                                <TextBlock Text="{DynamicResource s.cl.chipAdmin}" FontSize="11" Foreground="{StaticResource MutedBrush}" />
+                            </Border>
+                        </StackPanel>
+                        <TextBlock Text="{Binding Description}" Style="{StaticResource Body}" Margin="0,5,0,0" FontSize="12" />
+                        <TextBlock Text="{Binding ResultText}" Style="{StaticResource Muted}" Margin="0,6,0,0"
+                                   Foreground="{StaticResource AccentBrush}" Visibility="{Binding ResultVisibility}" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="3" Text="{Binding SizeText}" FontSize="17" FontWeight="SemiBold"
+                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
+            <StackPanel Margin="40,30,40,20">
+                <TextBlock Text="{DynamicResource s.cl.title}" Style="{StaticResource H1}" />
+                <TextBlock Text="{DynamicResource s.cl.sub}" Style="{StaticResource Muted}" FontSize="13" Margin="0,6,0,0"
+                           TextWrapping="Wrap" TextTrimming="None" MaxWidth="760" HorizontalAlignment="Left" />
+
+                <Border x:Name="AdminBanner" Style="{StaticResource Tip}" Margin="0,20,0,0" Visibility="Collapsed">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="&#xE7EF;" Style="{StaticResource Icon}" Foreground="{StaticResource AccentBrush}" Margin="0,0,12,0" />
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{DynamicResource s.cl.adminT}" FontWeight="SemiBold" />
+                            <TextBlock Text="{DynamicResource s.cl.adminD}" Style="{StaticResource Muted}" Margin="0,3,0,0" Foreground="#C9C2A0" />
+                        </StackPanel>
+                        <Button Grid.Column="2" Content="{DynamicResource s.cl.adminBtn}" Margin="16,0,0,0" Click="Admin_Click" />
+                    </Grid>
+                </Border>
+
+                <StackPanel Orientation="Horizontal" Margin="0,24,0,0">
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource TextBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource s.cl.safe}" Style="{StaticResource H2}" Margin="10,0,0,0" />
+                </StackPanel>
+                <TextBlock Text="{DynamicResource s.cl.safeSub}" Style="{StaticResource Muted}" Margin="18,4,0,12" />
+                <ItemsControl x:Name="SafeItems" ItemTemplate="{StaticResource CleanItem}" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,18,0,0">
+                    <Ellipse Width="8" Height="8" Fill="{StaticResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{DynamicResource s.cl.careful}" Style="{StaticResource H2}" Margin="10,0,0,0" />
+                </StackPanel>
+                <TextBlock Text="{DynamicResource s.cl.carefulSub}" Style="{StaticResource Muted}" Margin="18,4,0,12" />
+                <ItemsControl x:Name="CarefulItems" ItemTemplate="{StaticResource CleanItem}" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Нижняя панель -->
+        <Border Grid.Row="1" Background="#141414" Padding="40,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock x:Name="TotalText" FontSize="18" FontWeight="SemiBold" />
+                    <TextBlock x:Name="StatusText" Style="{StaticResource Muted}" Margin="0,3,0,0" />
+                </StackPanel>
+                <Button x:Name="RecalcButton" Grid.Column="1" Content="{DynamicResource s.cl.recalc}" Margin="0,0,10,0" Click="Recalc_Click" />
+                <Button x:Name="CleanButton" Grid.Column="2" Style="{StaticResource Primary}" Padding="22,10" Click="Clean_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xEA99;" Style="{StaticResource Icon}" FontSize="14" Margin="0,0,8,0" />
+                        <TextBlock Text="{DynamicResource s.cl.clean}" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

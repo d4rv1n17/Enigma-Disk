@@ -1,0 +1,9 @@
+bin/
+obj/
+dist/
+.vs/
+build.log
+*.user
+Setup/bin/
+Setup/obj/
+Setup/out/
