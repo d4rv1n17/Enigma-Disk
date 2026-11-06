@@ -26,6 +26,10 @@ public partial class GrowthPage : UserControl, IPage
 
     private void BuildDriveSeg(List<string> drives)
     {
+        // пересобираем только если состав дисков поменялся, иначе Checked триггерит Refresh по кругу
+        if (DriveSeg.Children.Count == drives.Count &&
+            DriveSeg.Children.OfType<RadioButton>().Select(b => (string)b.Tag).SequenceEqual(drives))
+            return;
         DriveSeg.Children.Clear();
         foreach (var d in drives)
         {
@@ -149,6 +153,16 @@ public partial class GrowthPage : UserControl, IPage
     private void Row_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button b && b.Tag is string path) AppState.OpenInFiles(path);
+    }
+
+    private void History_Click(object sender, RoutedEventArgs e)
+    {
+        e.Handled = true;
+        if (sender is not Button { Tag: string path }) return;
+        if (Window.GetWindow(this) is not MainWindow w) return;
+        var drive = _drive ?? System.IO.Path.GetPathRoot(path);
+        if (drive == null) return;
+        FolderHistoryWindow.ShowDialog(w, path, drive);
     }
 
     private void Open_Click(object sender, RoutedEventArgs e)

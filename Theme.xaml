@@ -65,7 +65,9 @@
     <!-- Карточка -->
     <Style x:Key="Card" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="16" />
         <Setter Property="Padding" Value="22,20" />
     </Style>
 
@@ -81,17 +83,22 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8"
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="9"
+                            BorderThickness="1" BorderBrush="{StaticResource LineBrush}"
                             Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                           TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#303030" />
+                            <Setter TargetName="Bd" Property="Background" Value="#2F2F2F" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#3D3D3D" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#383838" />
+                            <Setter TargetName="Bd" Property="Background" Value="#262626" />
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.4" />
@@ -109,7 +116,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
-                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8"
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="9"
                             Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                           TextElement.Foreground="{TemplateBinding Foreground}" />
@@ -121,8 +128,42 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="#E6BD00" />
                         </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#FFF1A6" />
+                        </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.35" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- Опасное действие: удаление -->
+    <Style x:Key="Danger" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="#2E1819" />
+        <Setter Property="Foreground" Value="#FF8A8F" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="9"
+                            BorderThickness="1" BorderBrush="#54272B"
+                            Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#422023" />
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#7A3238" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#301619" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.4" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -165,34 +206,40 @@
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
-        <Setter Property="Margin" Value="14,2" />
+        <Setter Property="Margin" Value="12,2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="RadioButton">
                     <Border x:Name="Bd" Background="Transparent" CornerRadius="10" Height="42">
                         <Grid>
-                            <Border x:Name="Mark" Width="3" Height="18" CornerRadius="2" HorizontalAlignment="Left"
-                                    Background="{StaticResource AccentBrush}" Visibility="Hidden" />
-                            <StackPanel Orientation="Horizontal" Margin="16,0,12,0" VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="3" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Border x:Name="ActiveMark" Background="Transparent" CornerRadius="2" Margin="0,8,0,8" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="18,0,12,0" VerticalAlignment="Center">
                                 <TextBlock x:Name="Ico" Text="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"
                                            FontFamily="{StaticResource IconFont}" FontSize="16" Width="22"
                                            Foreground="{StaticResource DimBrush}" VerticalAlignment="Center" />
-                                <ContentPresenter x:Name="Cp" Margin="10,0,0,0" VerticalAlignment="Center"
+                                <ContentPresenter x:Name="Cp" Margin="12,0,0,0" VerticalAlignment="Center"
                                                   TextElement.Foreground="{TemplateBinding Foreground}" />
                             </StackPanel>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#1C1C1C" />
+                            <Setter TargetName="Bd" Property="Background" Value="#1A1A1A" />
                             <Setter TargetName="Cp" Property="TextElement.Foreground" Value="{StaticResource TextBrush}" />
                             <Setter TargetName="Ico" Property="Foreground" Value="{StaticResource MutedBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{StaticResource Panel2Brush}" />
-                            <Setter TargetName="Mark" Property="Visibility" Value="Visible" />
                             <Setter TargetName="Cp" Property="TextElement.Foreground" Value="{StaticResource TextBrush}" />
                             <Setter TargetName="Ico" Property="Foreground" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="ActiveMark" Property="Background" Value="{StaticResource AccentBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.45" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -217,9 +264,10 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Cp" Property="TextElement.Foreground" Value="{StaticResource TextBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="#202020" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="#333333" />
+                            <Setter TargetName="Bd" Property="Background" Value="#383838" />
                             <Setter TargetName="Cp" Property="TextElement.Foreground" Value="{StaticResource TextBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
@@ -229,7 +277,9 @@
     </Style>
     <Style x:Key="SegHost" TargetType="Border">
         <Setter Property="Background" Value="{StaticResource PanelBrush}" />
-        <Setter Property="CornerRadius" Value="9" />
+        <Setter Property="BorderBrush" Value="{StaticResource LineBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="2" />
         <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
@@ -288,14 +338,18 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="TextBox">
-                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="7"
-                            BorderThickness="1" BorderBrush="Transparent">
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8"
+                            BorderThickness="1" BorderBrush="{StaticResource LineBrush}">
                         <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
                                       VerticalAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="BorderBrush" Value="#3D3D3D" />
+                        </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="#282828" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -392,7 +446,10 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Panel2Brush}" />
+                            <Setter TargetName="Bd" Property="Background" Value="#1E1E1E" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="#242424" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -443,6 +500,33 @@
     </Style>
     <Style x:Key="AccentChip" TargetType="Border" BasedOn="{StaticResource Chip}">
         <Setter Property="Background" Value="{StaticResource AccentSoftBrush}" />
+    </Style>
+
+    <!-- Кнопка-иконка -->
+    <Style x:Key="IconBtn" TargetType="Button">
+        <Setter Property="Foreground" Value="{StaticResource MutedBrush}" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Cursor" Value="Hand" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Width" Value="30" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="FontFamily" Value="{StaticResource IconFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="Bd" Background="Transparent" CornerRadius="6">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{StaticResource Panel2Brush}" />
+                            <Setter Property="Foreground" Value="{StaticResource TextBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

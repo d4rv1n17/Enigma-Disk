@@ -81,10 +81,16 @@ public static class Scheduler
             };
             foreach (var a in args) psi.ArgumentList.Add(a);
             using var p = Process.Start(psi)!;
-            var err = p.StandardError.ReadToEnd();
-            var outp = p.StandardOutput.ReadToEnd();
-            p.WaitForExit(15000);
-            output = (err + outp).Trim();
+            var err = p.StandardError.ReadToEndAsync();
+            var outp = p.StandardOutput.ReadToEndAsync();
+            if (!p.WaitForExit(15000))
+            {
+                try { p.Kill(entireProcessTree: true); } catch { }
+                p.WaitForExit();
+                output = "schtasks.exe timed out";
+                return -1;
+            }
+            output = (err.GetAwaiter().GetResult() + outp.GetAwaiter().GetResult()).Trim();
             return p.ExitCode;
         }
         catch (Exception ex)

@@ -54,6 +54,31 @@ public static class Native
         return new WindowsPrincipal(id).IsInRole(WindowsBuiltInRole.Administrator);
     }
 
+    /// <summary>Открывает внешнюю HTTP(S)-ссылку через обработчик Windows.</summary>
+    public static bool OpenUrl(string url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) ||
+            (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+            return false;
+
+        try
+        {
+            Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+            return true;
+        }
+        catch
+        {
+            try
+            {
+                var start = new ProcessStartInfo("explorer.exe");
+                start.ArgumentList.Add(uri.AbsoluteUri);
+                Process.Start(start);
+                return true;
+            }
+            catch { return false; }
+        }
+    }
+
     public static bool RestartAsAdmin()
     {
         try

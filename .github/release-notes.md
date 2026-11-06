@@ -1,4 +1,8 @@
-First public release of **Enigma Disk** — a Windows app that shows which folders grow on your disk and helps you clean up safely.
+## Enigma Disk 2.0.0
+
+Major update to **Enigma Disk** with the redesigned interface, disk map, file categories, duplicate search, folder history, HTML reports, notifications, and expanded cleanup options.
+
+If Enigma Disk 2.0 is already installed, choose **Settings → Check for updates**. The app downloads and applies the update in place, then restarts. Your settings and snapshots stay where they are.
 
 ## Download
 
@@ -23,5 +27,6 @@ Requirements: Windows 10 or 11, 64-bit. No .NET installation required.
 
 ---
 
-Первый релиз **Enigma Disk** — приложения для Windows, которое показывает, какие папки растут на диске, и помогает безопасно освободить место.
-Скачайте **EnigmaDiskSetup.exe** и запустите. Если Windows покажет «Windows защитила ваш компьютер», нажмите **Подробнее → Выполнить в любом случае**.
+Если Enigma Disk 2.0 уже установлен, выберите **Настройки → Проверить обновления**. Приложение установит обновление поверх текущей версии и перезапустится; снимки и настройки сохранятся.
+
+Для новой установки скачайте **EnigmaDiskSetup.exe** и запустите. Если Windows покажет «Windows защитила ваш компьютер», нажмите **Подробнее → Выполнить в любом случае**.

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:c="clr-namespace:EnigmaDisk.Controls">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-        <StackPanel Margin="40,30,40,40">
+        <StackPanel Margin="28,26,28,32">
             <!-- Заголовок -->
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -15,13 +15,21 @@
                     <TextBlock Text="{DynamicResource s.ov.sub}" Style="{StaticResource Muted}" FontSize="13" Margin="0,6,0,0" TextWrapping="Wrap" TextTrimming="None" />
                     <TextBlock x:Name="Subtitle" Style="{StaticResource Muted}" Foreground="{StaticResource DimBrush}" Margin="0,4,0,0" />
                 </StackPanel>
-                <Button x:Name="MainScan" Grid.Column="1" Style="{StaticResource Primary}" Padding="18,10" VerticalAlignment="Top"
-                        Margin="20,4,0,0" Click="MainScan_Click">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="&#xE72C;" Style="{StaticResource Icon}" FontSize="14" Margin="0,0,8,0" />
-                        <TextBlock x:Name="MainScanText" />
-                    </StackPanel>
-                </Button>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="20,4,0,0">
+                    <Button x:Name="MainScan" Style="{StaticResource Primary}" Padding="18,10" VerticalAlignment="Top" Click="MainScan_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE72C;" Style="{StaticResource Icon}" FontSize="14" Margin="0,0,8,0" />
+                            <TextBlock x:Name="MainScanText" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="ScanAll" Padding="14,10" VerticalAlignment="Top" Margin="8,0,0,0" Click="ScanAll_Click"
+                            ToolTip="{DynamicResource s.ov.scanAllTip}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8B7;" Style="{StaticResource Icon}" FontSize="14" Margin="0,0,7,0" />
+                            <TextBlock Text="{DynamicResource s.ov.scanAll}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
             </Grid>
 
             <!-- Как это работает -->

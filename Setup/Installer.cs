@@ -15,7 +15,7 @@ namespace EnigmaDiskSetup
     public static class Installer
     {
         public const string AppName = "Enigma Disk";
-        public const string Version = "1.1.0";
+        public const string Version = "2.0.0";
         public const string Publisher = "Enigma Studio";
         public const string ExeName = "EnigmaDisk.exe";
         private const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\EnigmaDisk";

@@ -32,6 +32,20 @@ public partial class App : Application
         ShutdownMode = ShutdownMode.OnMainWindowClose;
         var w = new MainWindow();
         MainWindow = w;
+
+        // Первое знакомство: короткое обучение и, по желанию, сразу первый снимок
+        w.Loaded += async (_, _) =>
+        {
+            bool introPreview = e.Args.Any(a => a.Equals("--intro-preview", StringComparison.OrdinalIgnoreCase));
+            await w.PlayIntroAsync(introPreview);
+            if (introPreview) return;
+            await Task.Delay(150);
+            if (Pages.WelcomeWindow.ShowOnFirstRun(w))
+            {
+                var sys = System.IO.Path.GetPathRoot(Environment.SystemDirectory) ?? @"C:\";
+                await AppState.ScanAsync(sys);
+            }
+        };
         w.Show();
     }
 

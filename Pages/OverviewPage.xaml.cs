@@ -30,6 +30,7 @@ public partial class OverviewPage : UserControl, IPage
 {
     private string? _chartDrive;
     private int _version;
+    private bool _scanningAll;
 
     public OverviewPage()
     {
@@ -64,7 +65,8 @@ public partial class OverviewPage : UserControl, IPage
 
         HowItWorks.Visibility = history.Count(h => h.Version == Snapshot.CurrentVersion) < 3 ? Visibility.Visible : Visibility.Collapsed;
         MainScanText.Text = Loc.F("common.scanDrive", SystemDrive.TrimEnd('\\'));
-        MainScan.IsEnabled = !AppState.IsScanning;
+        MainScan.IsEnabled = !AppState.IsScanning && !_scanningAll;
+        ScanAll.IsEnabled = !AppState.IsScanning && !_scanningAll && drives.Count > 1;
 
         var last = history.OrderByDescending(h => h.Time).FirstOrDefault();
         Subtitle.Text = last == null ? Loc.T("side.noSnapshots") : Loc.F("ov.last", Format.Ago(last.Time), Format.When(last.Time));
@@ -93,7 +95,7 @@ public partial class OverviewPage : UserControl, IPage
                 LastScanText = AppState.ActiveDrive == d.Name ? Loc.T("ov.scanning")
                     : latest == null ? Loc.T("ov.neverScanned") : Loc.F("ov.snapAgo", Format.Ago(latest.Time)),
                 WeekText = week,
-                CanScan = !AppState.IsScanning,
+                CanScan = !AppState.IsScanning && !_scanningAll,
             });
         }
         Drives.ItemsSource = vms;
@@ -169,6 +171,20 @@ public partial class OverviewPage : UserControl, IPage
     }
 
     private void MainScan_Click(object sender, RoutedEventArgs e) => ScanDefault();
+
+    private async void ScanAll_Click(object sender, RoutedEventArgs e)
+    {
+        if (_scanningAll || AppState.IsScanning) return;
+        _scanningAll = true;
+        Refresh();
+        ScanAll.IsEnabled = false;
+        try { await AppState.ScanAllAsync(); }
+        finally
+        {
+            _scanningAll = false;
+            Refresh();
+        }
+    }
 
     private void AutoTip_Click(object sender, RoutedEventArgs e)
     {

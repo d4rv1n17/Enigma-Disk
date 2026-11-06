@@ -9,12 +9,14 @@ namespace EnigmaDisk.Core;
 /// <summary>
 /// Быстрый многопоточный обход диска. Не заходит в симлинки и junction-папки,
 /// не считает облачные файлы OneDrive, которых нет на диске.
+/// Учитывает исключения пользователя и собирает статистику по типам файлов.
 /// </summary>
 public sealed class Scanner
 {
     public const long KeepFolderBytes = 1L << 20;   // в снимок попадают папки от 1 МБ
     public const long BigFileBytes = 50L << 20;     // «крупные файлы» от 50 МБ
     private const int TopFilesCount = 300;
+    private const int DuplicateCandidatesCount = 50000;
     private const int RecallOnOpen = 0x40000;
     private const int RecallOnDataAccess = 0x400000;
 
@@ -50,12 +52,41 @@ public sealed class Scanner
 
     private long _files;
     private long _bytes;
+    private long _diskBytes;
     private volatile string _current = "";
     private readonly ConcurrentBag<FileEntry> _big = new();
+    private readonly object _duplicateLock = new();
+    private readonly SortedSet<FileEntry> _duplicateCandidates = new(Comparer<FileEntry>.Create((a, b) =>
+    {
+        int bySize = a.S.CompareTo(b.S);
+        return bySize != 0 ? bySize : StringComparer.OrdinalIgnoreCase.Compare(a.Path, b.Path);
+    }));
+    private readonly ConcurrentDictionary<int, (long size, int count)> _types = new();
+    private readonly ConcurrentDictionary<string, (long size, int count, int cat)> _exts = new(StringComparer.OrdinalIgnoreCase);
+
+    // настройки из AppState: исключения и физический размер
+    private readonly List<(string path, bool isPrefix)> _exclusions;
+    private readonly bool _useDiskSize;
 
     public long Files => Interlocked.Read(ref _files);
     public long Bytes => Interlocked.Read(ref _bytes);
     public string Current => _current;
+
+    public Scanner(IEnumerable<string>? exclusions = null, bool useDiskSize = false)
+    {
+        _exclusions = (exclusions ?? Enumerable.Empty<string>())
+            .Where(p => p.Length > 3)
+            .Select(p => (p.TrimEnd('\\') + "\\", true))
+            .ToList();
+        _useDiskSize = useDiskSize;
+    }
+
+    private bool IsExcluded(string path)
+    {
+        foreach (var (p, _) in _exclusions)
+            if (path.StartsWith(p, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
 
     private sealed class Node
     {
@@ -78,6 +109,7 @@ public sealed class Scanner
     public Snapshot Scan(string drive, CancellationToken ct)
     {
         var sw = Stopwatch.StartNew();
+        TypeCategories.Build();
         var root = new Node { Name = drive };
         ScanDir(drive, root, 0, ct);
 
@@ -90,8 +122,12 @@ public sealed class Scanner
             TotalBytes = di.TotalSize,
             FreeBytes = di.TotalFreeSpace,
             ScannedBytes = root.Size,
+            DiskBytes = _diskBytes,
             FileCount = root.Files,
             DurationSec = sw.Elapsed.TotalSeconds,
+            Types = _types.Select(kv => new TypeEntry { N = kv.Key, S = kv.Value.size, C = kv.Value.count }).ToList(),
+            Exts = _exts.OrderByDescending(kv => kv.Value.size).Take(120)
+                .Select(kv => new ExtEntry { E = kv.Key, N = kv.Value.cat, S = kv.Value.size, C = kv.Value.count }).ToList(),
         };
 
         // Плоский список в порядке обхода в ширину: родитель всегда раньше детей.
@@ -109,17 +145,20 @@ public sealed class Scanner
                 queue.Enqueue((c, snap.Folders.Count - 1));
             }
         }
-
         snap.TopFiles = _big.OrderByDescending(f => f.S).Take(TopFilesCount).ToList();
+        lock (_duplicateLock)
+            snap.DuplicateCandidates = _duplicateCandidates.Reverse().ToList();
         return snap;
     }
 
     private void ScanDir(string path, Node node, int depth, CancellationToken ct)
     {
         ct.ThrowIfCancellationRequested();
+        if (IsExcluded(path)) return;
         _current = path;
 
         long size = 0;
+        long disk = 0;
         int files = 0;
         List<Node>? kids = null;
         bool inWindows = (path + "\\").StartsWith(_windowsDir, StringComparison.OrdinalIgnoreCase);
@@ -146,12 +185,41 @@ public sealed class Scanner
                 if ((a & (RecallOnOpen | RecallOnDataAccess)) != 0 || (it.Attr & FileAttributes.Offline) != 0)
                     continue; // файл только в облаке, место на диске не занимает
 
-                if (inWindows && it.Length > 0)
-                    size += it.Length / LinkCount(System.IO.Path.Combine(path, it.Name));
+                long len = it.Length;
+                long onDisk = len;
+                if (_useDiskSize)
+                    onDisk = AllocatedSize(System.IO.Path.Combine(path, it.Name), len);
+                if (inWindows && len > 0)
+                {
+                    uint links = LinkCount(System.IO.Path.Combine(path, it.Name));
+                    size += len / links;
+                    disk += onDisk / links;
+                }
                 else
-                    size += it.Length;
-                if (it.Length >= BigFileBytes)
-                    _big.Add(new FileEntry { Path = System.IO.Path.Combine(path, it.Name), S = it.Length, Modified = it.Modified });
+                {
+                    size += len;
+                    disk += onDisk;
+                }
+
+                // статистика по типам
+                var ext = System.IO.Path.GetExtension(it.Name);
+                if (ext.Length > 0) ext = ext.Substring(1);
+                int t = TypeCategories.Index(ext);
+                _types.AddOrUpdate(t, (len, 1), (_, v) => (v.size + len, v.count + 1));
+                _exts.AddOrUpdate(ext, (len, 1, t), (_, v) => (v.size + len, v.count + 1, v.cat));
+
+                if (len >= BigFileBytes)
+                    _big.Add(new FileEntry { Path = System.IO.Path.Combine(path, it.Name), S = len, Modified = it.Modified });
+                if (len >= Duplicates.MinBytes)
+                {
+                    var candidate = new FileEntry { Path = System.IO.Path.Combine(path, it.Name), S = len, Modified = it.Modified };
+                    lock (_duplicateLock)
+                    {
+                        _duplicateCandidates.Add(candidate);
+                        if (_duplicateCandidates.Count > DuplicateCandidatesCount)
+                            _duplicateCandidates.Remove(_duplicateCandidates.Min!);
+                    }
+                }
             }
         }
         catch (UnauthorizedAccessException) { }
@@ -160,6 +228,7 @@ public sealed class Scanner
 
         Interlocked.Add(ref _files, files);
         Interlocked.Add(ref _bytes, size);
+        Interlocked.Add(ref _diskBytes, disk);
         node.Children = kids;
 
         if (kids != null)
@@ -174,15 +243,37 @@ public sealed class Scanner
             {
                 foreach (var k in kids) ScanDir(System.IO.Path.Combine(path, k.Name), k, depth + 1, ct);
             }
-
-            foreach (var k in kids)
+            if (kids.Count > 0)
             {
-                size += k.Size;
-                files += k.Files;
+                // исключённые подпапки не участвуют в размере родителя
+                foreach (var k in kids)
+                    if (IsExcluded(System.IO.Path.Combine(path, k.Name)))
+                    {
+                        k.Size = 0;
+                        k.Files = 0;
+                        k.Children = null;
+                    }
+                size += kids.Sum(k => k.Size);
             }
         }
 
         node.Size = size;
-        node.Files = files;
+        node.Files = files + (kids?.Sum(k => k.Files) ?? 0);
     }
+
+    private static long AllocatedSize(string path, long fallback)
+    {
+        try
+        {
+            Marshal.SetLastPInvokeError(0);
+            uint low = GetCompressedFileSizeW(@"\\?\" + path, out uint high);
+            if (low == uint.MaxValue && Marshal.GetLastPInvokeError() != 0) return fallback;
+            ulong size = ((ulong)high << 32) | low;
+            return size <= long.MaxValue ? (long)size : fallback;
+        }
+        catch { return fallback; }
+    }
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, EntryPoint = "GetCompressedFileSizeW")]
+    private static extern uint GetCompressedFileSizeW(string fileName, out uint highPart);
 }

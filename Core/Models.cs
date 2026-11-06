@@ -29,10 +29,18 @@ public sealed class Snapshot
     public long TotalBytes { get; set; }
     public long FreeBytes { get; set; }
     public long ScannedBytes { get; set; }
+    /// <summary>Физический размер (по кластерам), если считался.</summary>
+    public long DiskBytes { get; set; }
     public long FileCount { get; set; }
     public double DurationSec { get; set; }
     public List<FolderEntry> Folders { get; set; } = new();
     public List<FileEntry> TopFiles { get; set; } = new();
+    /// <summary>Файлы от 1 МБ, доступные отдельному поиску дубликатов.</summary>
+    public List<FileEntry> DuplicateCandidates { get; set; } = new();
+    /// <summary>Суммарный размер по категориям файлов.</summary>
+    public List<TypeEntry> Types { get; set; } = new();
+    /// <summary>Топ расширений по занимаемому месту.</summary>
+    public List<ExtEntry> Exts { get; set; } = new();
 
     [JsonIgnore] public long UsedBytes => TotalBytes - FreeBytes;
 
@@ -96,6 +104,7 @@ public sealed class SnapshotInfo
     public long TotalBytes { get; set; }
     public long FreeBytes { get; set; }
     public long ScannedBytes { get; set; }
+    public long DiskBytes { get; set; }
     public long FileCount { get; set; }
     public string File { get; set; } = "";
 
@@ -110,4 +119,19 @@ public sealed class AppSettings
     public int AutoHour { get; set; } = 13;
     public int RetentionDays { get; set; } = 180;
     public int MinGrowthMb { get; set; } = 20;
+    /// <summary>Папки, которые не сканируются.</summary>
+    public List<string> Exclusions { get; set; } = new();
+    /// <summary>Уведомление «диск заполнен»: порог в %.</summary>
+    public int NearFullPercent { get; set; } = 90;
+    /// <summary>Уведомления о быстром росте.</summary>
+    public bool NotifyGrowth { get; set; } = true;
+    public bool NotifyNearFull { get; set; } = true;
+    /// <summary>Сканировать физический размер (после сжатия NTFS/разрежённые файлы).</summary>
+    public bool UseDiskSize { get; set; } = false;
+    /// <summary>Приветствие с коротким обучением показано.</summary>
+    public bool WelcomeShown { get; set; } = false;
+    /// <summary>Показывать анимированное интро при запуске приложения.</summary>
+    public bool ShowIntro { get; set; } = true;
+    /// <summary>Проверять обновления при запуске.</summary>
+    public bool CheckUpdates { get; set; } = true;
 }

@@ -41,7 +41,7 @@
         </Grid.RowDefinitions>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Focusable="False">
-            <StackPanel Margin="40,30,40,20">
+            <StackPanel Margin="28,26,28,20">
                 <TextBlock Text="{DynamicResource s.cl.title}" Style="{StaticResource H1}" />
                 <TextBlock Text="{DynamicResource s.cl.sub}" Style="{StaticResource Muted}" FontSize="13" Margin="0,6,0,0"
                            TextWrapping="Wrap" TextTrimming="None" MaxWidth="760" HorizontalAlignment="Left" />

@@ -38,6 +38,12 @@ public partial class FilesPage : UserControl, IPage
 
     public void OnShown() => _ = LoadAsync();
 
+    public void FocusSearch()
+    {
+        SearchBox.Focus();
+        SearchBox.SelectAll();
+    }
+
     /// <summary>Открыть конкретную папку (например, из списка «Что выросло»).</summary>
     public void ShowPath(string path)
     {
@@ -87,7 +93,8 @@ public partial class FilesPage : UserControl, IPage
 
         Empty.Visibility = Visibility.Collapsed;
         Subtitle.Text = Loc.F("fl.info", Format.When(_snap.Time), Loc.Count(_snap.FileCount, "unit.file"),
-            Format.Size(_snap.ScannedBytes), Format.Duration(_snap.DurationSec));
+            Format.Size(_snap.ScannedBytes), Format.Duration(_snap.DurationSec)) +
+            (_snap.DiskBytes > 0 ? " · " + Loc.F("fl.diskSize", Format.Size(_snap.DiskBytes)) : "");
 
         if (_path == null || !_snap.Index.ContainsKey(_path)) _path = _snap.Drive;
         Render();
@@ -109,6 +116,10 @@ public partial class FilesPage : UserControl, IPage
 
     private void BuildDriveSeg(List<string> drives)
     {
+        // пересобираем только если состав дисков поменялся, иначе Checked триггерит LoadAsync по кругу
+        if (DriveSeg.Children.Count == drives.Count &&
+            DriveSeg.Children.OfType<RadioButton>().Select(b => (string)b.Tag).SequenceEqual(drives))
+            return;
         DriveSeg.Children.Clear();
         foreach (var d in drives)
         {
@@ -131,12 +142,14 @@ public partial class FilesPage : UserControl, IPage
     private void Render()
     {
         if (_snap == null || _path == null) return;
-        bool files = TabFiles.IsChecked == true;
-        CrumbBar.Visibility = files ? Visibility.Collapsed : Visibility.Visible;
+        bool searching = (SearchBox.Text ?? "").Trim().Length > 0;
+        CrumbBar.Visibility = searching || TabFiles.IsChecked == true ? Visibility.Collapsed : Visibility.Visible;
         ColHeader.Visibility = Visibility.Visible;
-        ColShare.Text = files ? "" : Loc.T("fl.colShare");
-        ColWeek.Text = files ? Loc.T("fl.colModified") : Loc.T("fl.colWeek");
-        if (files) { RenderFiles(); return; }
+        ColShare.Text = searching || TabFiles.IsChecked == true ? "" : Loc.T("fl.colShare");
+        ColWeek.Text = searching ? Loc.T("fl.colModified") : TabFiles.IsChecked == true ? Loc.T("fl.colModified") : Loc.T("fl.colWeek");
+        SearchClear.Visibility = searching ? Visibility.Visible : Visibility.Collapsed;
+        if (searching) { RenderSearch(); return; }
+        if (TabFiles.IsChecked == true) { RenderFiles(); return; }
 
         int idx = _snap.Index[_path];
         var me = _snap.Folders[idx];
@@ -198,6 +211,45 @@ public partial class FilesPage : UserControl, IPage
         }
         Crumbs.ItemsSource = crumbs;
         UpButton.IsEnabled = me.P >= 0;
+    }
+
+    private void RenderSearch()
+    {
+        if (_snap == null) return;
+        var hits = Search.Find(_snap, SearchBox.Text);
+        List.ItemsSource = hits.Select(h => new FolderRow
+        {
+            Path = h.Path,
+            Name = h.Name,
+            Sub = h.Folder,
+            Fraction = 0,
+            PercentText = "",
+            DeltaText = "",
+            SizeText = h.SizeText,
+            Icon = h.IsFile ? "" : "",
+            IconBrush = (Brush)FindResource("MutedBrush"),
+            IsFile = h.IsFile,
+        }).ToList();
+        if (hits.Count == 0)
+        {
+            List.ItemsSource = null;
+            EmptyTitle.Text = Loc.T("sr.title");
+            EmptyText.Text = Loc.T("sr.none");
+            EmptyScan.Visibility = Visibility.Collapsed;
+            Empty.Visibility = Visibility.Visible;
+        }
+        else Empty.Visibility = Visibility.Collapsed;
+    }
+
+    private void Search_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (IsLoaded && _snap != null) { Empty.Visibility = Visibility.Collapsed; Render(); }
+    }
+
+    private void SearchClear_Click(object sender, RoutedEventArgs e)
+    {
+        SearchBox.Text = "";
+        SearchBox.Focus();
     }
 
     private void RenderFiles()

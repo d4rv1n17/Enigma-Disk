@@ -58,7 +58,7 @@ public sealed class SnapshotStore
             _history.Add(new SnapshotInfo
             {
                 Version = snap.Version, Drive = snap.Drive, Time = snap.Time, TotalBytes = snap.TotalBytes, FreeBytes = snap.FreeBytes,
-                ScannedBytes = snap.ScannedBytes, FileCount = snap.FileCount, File = file,
+                ScannedBytes = snap.ScannedBytes, DiskBytes = snap.DiskBytes, FileCount = snap.FileCount, File = file,
             });
             _cache[file] = snap;
             SaveIndex();

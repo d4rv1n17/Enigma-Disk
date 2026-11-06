@@ -223,24 +223,7 @@ public static class Cleaner
                 }
                 catch { r.Skipped++; }
             }
-            RemoveEmptyDirs(dir, isRoot: true);
         }
         return r;
-    }
-
-    private static void RemoveEmptyDirs(string dir, bool isRoot)
-    {
-        try
-        {
-            foreach (var sub in Directory.EnumerateDirectories(dir))
-            {
-                var info = new DirectoryInfo(sub);
-                if ((info.Attributes & FileAttributes.ReparsePoint) != 0) continue;
-                RemoveEmptyDirs(sub, false);
-            }
-            if (!isRoot && !Directory.EnumerateFileSystemEntries(dir).Any())
-                Directory.Delete(dir);
-        }
-        catch { }
     }
 }

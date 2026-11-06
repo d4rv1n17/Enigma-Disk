@@ -26,7 +26,8 @@ Tools like WizTree or WinDirStat show what is on the disk **right now**. Enigma 
 
 ## Features
 
-- **Snapshots** — a fast multi-threaded scan records the size of every folder over 1 MB and the 300 largest files.
+- **Snapshots** — a fast multi-threaded scan records the size of every folder over 1 MB, the 300 largest files,
+  and up to 50,000 files over 1 MB for duplicate detection. Scan all ready drives in one operation.
   A full scan of a 240 GB system drive with ~1 million files takes about a minute and a half the first time and around 20 seconds on repeat runs.
 - **What grew** — compare with yesterday, a week ago, a month ago or the first snapshot.
   The list shows the folders that actually grew, not the whole chain of parents
@@ -34,6 +35,8 @@ Tools like WizTree or WinDirStat show what is on the disk **right now**. Enigma 
   (shader caches, Windows updates, Telegram, NuGet, Gradle, Steam and more).
 - **Folders & files** — browse any snapshot with sizes, share of the parent folder and change over the week,
   plus a list of the largest files.
+- **Duplicate finder** — compares file contents, not names. For a complete fresh candidate list, take a new snapshot.
+- **Allocated space** — optionally measure the space files actually occupy, including compressed and sparse files.
 - **Clean up** — only well-known caches and temporary files: Temp, browser caches, Discord and Teams,
   GPU shader caches, crash dumps, downloaded Windows updates, developer caches, Recycle Bin.
   Files in use are skipped, symlinks and junctions are never followed, nothing is deleted without confirmation.
@@ -50,6 +53,8 @@ Tools like WizTree or WinDirStat show what is on the disk **right now**. Enigma 
 
 **[⬇ Download EnigmaDiskSetup.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDiskSetup.exe)** (latest release) and run it.
 All versions are on the [Releases](../../releases) page.
+
+If Enigma Disk 2.0 is already installed, choose **Settings → Check for updates**. It applies the update in place and restarts the app; you don't need to uninstall it or move your snapshots.
 
 - Installs for the current user to `%LOCALAPPDATA%\Programs\Enigma Disk` — **no administrator rights needed**.
 - Adds Start menu and (optionally) desktop shortcuts.
@@ -79,7 +84,7 @@ so it adds only ~90 KB on top of the app it carries inside.
 ## Releasing a new version
 
 Bump `<Version>` in `EnigmaDisk.csproj` and `Setup/EnigmaDiskSetup.csproj` (and `Installer.Version`), then run the **Release** workflow
-from the Actions tab with a new tag such as `v1.2.0`, or push that tag. GitHub builds the installer and the portable exe
+from the Actions tab with a new tag such as `v2.0.0`, or push that tag. GitHub builds the installer and the portable exe
 and attaches them to the release together with `SHA256SUMS.txt`.
 
 ## Command line

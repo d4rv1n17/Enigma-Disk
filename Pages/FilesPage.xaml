@@ -2,7 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:c="clr-namespace:EnigmaDisk.Controls">
-    <Grid Margin="40,30,40,0">
+    <Grid Margin="28,26,28,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -32,6 +32,19 @@
                         <RadioButton x:Name="TabFiles" Style="{StaticResource Seg}" GroupName="ftab" Content="{DynamicResource s.fl.bigFiles}" Checked="Tab_Checked" />
                     </StackPanel>
                 </Border>
+            </StackPanel>
+            <StackPanel Margin="0,0,0,8" MinWidth="280">
+                <TextBlock Text=" " Style="{StaticResource Caption}" />
+                <Grid>
+                    <TextBox x:Name="SearchBox" Padding="10,7,32,7" TextChanged="Search_TextChanged" ToolTip="{DynamicResource s.fl.searchShortcut}" />
+                    <TextBlock IsHitTestVisible="False" Text="{DynamicResource s.fl.search}" Foreground="{StaticResource DimBrush}"
+                               Margin="12,0,0,0" VerticalAlignment="Center"
+                               Visibility="{Binding Text.IsEmpty, ElementName=SearchBox, Converter={StaticResource BoolVis}}" />
+                    <Button x:Name="SearchClear" Style="{StaticResource IconBtn}" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Margin="0,0,2,0" Visibility="Collapsed" Click="SearchClear_Click">
+                        <TextBlock Text="&#xE711;" Style="{StaticResource Icon}" FontSize="12" />
+                    </Button>
+                </Grid>
             </StackPanel>
         </WrapPanel>
 

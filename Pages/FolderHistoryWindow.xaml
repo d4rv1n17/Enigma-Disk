@@ -1,0 +1,23 @@
+<Window x:Class="EnigmaDisk.Pages.FolderHistoryWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:c="clr-namespace:EnigmaDisk.Controls"
+        Title="Enigma Disk" Width="680" Height="460" MinWidth="520" MinHeight="380"
+        WindowStartupLocation="CenterOwner" Background="{StaticResource BgBrush}"
+        Foreground="{StaticResource TextBrush}" FontFamily="{StaticResource UiFont}" FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" UseLayoutRounding="True">
+    <Grid Margin="26,22,26,22">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock x:Name="TitleText" Style="{StaticResource H2}" TextTrimming="CharacterEllipsis" />
+            <TextBlock x:Name="SubText" Style="{StaticResource Muted}" Margin="0,4,0,0" />
+            <TextBlock x:Name="NowText" Style="{StaticResource AccentText}" Margin="0,6,0,0" />
+        </StackPanel>
+        <TextBlock x:Name="Hint" Grid.Row="1" Style="{StaticResource Muted}" Margin="0,10,0,0" Visibility="Collapsed" />
+        <c:LineChart x:Name="Chart" Grid.Row="2" Margin="0,14,0,0" />
+    </Grid>
+</Window>
