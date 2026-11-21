@@ -180,7 +180,7 @@ public sealed class ExportReport
 /// <summary>Информация о приложении для окна «О программе».</summary>
 public static class About
 {
-    public const string Version = "2.0.0";
+    public const string Version = "2.1.0";
     public const string Name = "Enigma Disk";
     public static string Title => $"{Name} {Version}";
     public static string Subtitle => Loc.T("about.subtitle");

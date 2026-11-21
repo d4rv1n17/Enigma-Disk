@@ -15,7 +15,7 @@ namespace EnigmaDiskSetup
     public static class Installer
     {
         public const string AppName = "Enigma Disk";
-        public const string Version = "2.0.0";
+        public const string Version = "2.1.0";
         public const string Publisher = "Enigma Studio";
         public const string ExeName = "EnigmaDisk.exe";
         private const string UninstallKey = @"Software\Microsoft\Windows\CurrentVersion\Uninstall\EnigmaDisk";
@@ -55,6 +55,14 @@ namespace EnigmaDiskSetup
         /// <summary>Устанавливает программу. report(шаг, доля 0..1) вызывается из фонового потока.</summary>
         public static void Install(string dir, bool desktop, Action<string, double> report)
         {
+            using (var hub = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Uninstall\EnigmaHub"))
+            {
+                var hubDir = hub?.GetValue("InstallLocation") as string;
+                System.Version hubVersion;
+                if (string.IsNullOrWhiteSpace(hubDir) || !File.Exists(Path.Combine(hubDir, "EnigmaHub.exe")) ||
+                    !System.Version.TryParse(hub?.GetValue("DisplayVersion") as string, out hubVersion) || hubVersion < new System.Version(1, 3, 0))
+                    throw new InvalidOperationException("Install or update Enigma Hub (1.3.0 or newer) first: https://enigmastudioo.com");
+            }
             var exe = Path.Combine(dir, ExeName);
 
             report("stepClose", 0.02);
@@ -110,9 +118,10 @@ namespace EnigmaDiskSetup
                     string path = null;
                     try { path = p.MainModule?.FileName; } catch { }
                     if (path != null && !string.Equals(path, exe, StringComparison.OrdinalIgnoreCase)) continue;
-                    p.CloseMainWindow();
-                    if (!p.WaitForExit(4000)) { p.Kill(); p.WaitForExit(3000); }
+                    if (!p.HasExited)
+                        throw new InvalidOperationException("Close Enigma Disk before updating. Your work has not been interrupted.");
                 }
+                catch (InvalidOperationException) { throw; }
                 catch { }
                 finally { p.Dispose(); }
             }

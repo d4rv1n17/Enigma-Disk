@@ -58,7 +58,7 @@ public static class Loc
     {
         // общее
         ["app.tagline"] = ("что растёт на диске", "what grows on your disk"),
-        ["app.version"] = ("версия 2.0.0", "version 2.0.0"),
+        ["app.version"] = ("версия 2.1.0", "version 2.1.0"),
         ["common.scan"] = ("Сканировать", "Scan"),
         ["common.scanDrive"] = ("Сканировать {0}", "Scan {0}"),
         ["common.open"] = ("Открыть", "Open"),
@@ -413,7 +413,7 @@ public static class Loc
         ["about.author"] = ("Автор: d4rv1n", "Author: d4rv1n"),
         ["about.openUrl"] = ("Открыть страницу проекта", "Open project page"),
         ["about.openUrlFail"] = ("Не удалось открыть ссылку. Проверьте, что в Windows настроен браузер для веб-ссылок.", "Couldn't open the link. Check that Windows has a default browser for web links."),
-        ["about.checkUpdates"] = ("Проверить обновления", "Check for updates"),
+        ["about.checkUpdates"] = ("Открыть Enigma Hub", "Open Enigma Hub"),
         ["about.upToDate"] = ("У вас последняя версия {0}.", "You have the latest version {0}."),
         ["about.newVersion"] = ("Доступна версия {0}!", "Version {0} is available!"),
         ["about.download"] = ("Скачать", "Download"),
@@ -475,7 +475,7 @@ public static class Loc
         ["upd.now"] = ("Сейчас установлена версия {0}", "Currently installed: {0}"),
         ["nt.versionTitle"] = ("Обновление {0}", "Update {0}"),
         ["upd.title0"] = ("Обновления", "Updates"),
-        ["upd.sub"] = ("Приложение само проверяет GitHub Releases и предлагает установку в один клик. Обновляется прямо из окна, без установщика.",
-                       "The app checks GitHub Releases by itself and offers a one-click install. It updates right in the window, no installer needed."),
+        ["upd.sub"] = ("Установкой и обновлениями приложений Enigma управляет Enigma Hub. Ваши снимки и настройки сохраняются.",
+                         "Enigma Hub manages installation and updates for your Enigma apps. Your snapshots and settings are preserved."),
     };
 }

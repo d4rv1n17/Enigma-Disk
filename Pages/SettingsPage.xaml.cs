@@ -25,8 +25,8 @@ public partial class SettingsPage : UserControl, IPage
         NotifNearFullCheck.IsChecked = s.NotifyNearFull;
         NotifGrowthCheck.IsChecked = s.NotifyGrowth;
         NearFullBox.Text = s.NearFullPercent.ToString();
-        CheckUpdatesBox.IsChecked = s.CheckUpdates;
-        if (Updater.Cached is { IsNewer: true } u) UpdateStatus.Text = Loc.F("upd.title", u.Version);
+        CheckUpdatesBox.Visibility = Visibility.Collapsed;
+        UpdateStatus.Text = "Enigma Hub";
 
         var sys = System.IO.Path.GetPathRoot(Environment.SystemDirectory) ?? @"C:\";
         if (s.AutoDrives.Count == 0) s.AutoDrives.Add(sys);
@@ -299,28 +299,15 @@ public partial class SettingsPage : UserControl, IPage
                 MessageBoxButton.OK, MessageBoxImage.Information);
     }
 
-    private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
+    private void CheckUpdates_Click(object sender, RoutedEventArgs e)
     {
-        CheckUpdatesBtn.IsEnabled = false;
-        UpdateStatus.Text = Loc.T("upd.checking");
         try
         {
-            var found = await Updater.CheckAsync();
-            if (found == null)
-                UpdateStatus.Text = Loc.F("upd.latest", About.Version);
-            else
-            {
-                UpdateStatus.Text = "";
-                new UpdateWindow(found) { Owner = Window.GetWindow(this) }.ShowDialog();
-            }
+            HubLink.Open("updates");
         }
         catch
         {
-            UpdateStatus.Text = Loc.T("about.checkFail");
-        }
-        finally
-        {
-            CheckUpdatesBtn.IsEnabled = true;
+            UpdateStatus.Text = Loc.En ? "Install or restore Enigma Hub." : "Установите или восстановите Enigma Hub.";
         }
     }
 

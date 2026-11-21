@@ -1,32 +1,15 @@
-## Enigma Disk 2.0.0
+## Enigma Disk 2.1.0 — Enigma Hub ecosystem
 
-Major update to **Enigma Disk** with the redesigned interface, disk map, file categories, duplicate search, folder history, HTML reports, notifications, and expanded cleanup options.
+**Install or update [Enigma Hub to 1.3.0+](https://github.com/d4rv1n17/Enigma-Hub/releases/latest) first**, then install or update Disk from Hub's catalog. Close Disk yourself before applying the update. Snapshots and settings remain in place.
 
-If Enigma Disk 2.0 is already installed, choose **Settings → Check for updates**. The app downloads and applies the update in place, then restarts. Your settings and snapshots stay where they are.
+- Existing shortcuts open Hub and launch Disk automatically, including custom install paths.
+- Launch is confirmed locally with a one-use ticket; installed apps work offline without an account.
+- Updates now belong to Hub. **Settings → Open Enigma Hub** opens update management.
+- Closing/crashing Hub never stops Disk or its ongoing work. Scheduled snapshots remain independent of the interactive launcher.
+- Reopening Disk activates its existing window. Installers no longer force-close running products.
 
-## Download
-
-| File | What it is |
-|---|---|
-| **EnigmaDiskSetup.exe** | Installer (recommended). Installs for the current user, no administrator rights needed, adds Start menu / desktop shortcuts and an entry in Settings → Apps. |
-| **EnigmaDisk-portable.exe** | The same app without installation. Just run it. |
-
-Requirements: Windows 10 or 11, 64-bit. No .NET installation required.
-
-> The files are not code-signed yet, so Windows SmartScreen may show “Windows protected your PC”.
-> Click **More info → Run anyway**. You can verify the files with `SHA256SUMS.txt`.
-
-## What's inside
-
-- Folder-size snapshots and a **What grew** view (vs yesterday / a week / a month / the first snapshot)
-- Folder & large-file browser with weekly change
-- Safe cleanup of well-known caches and temporary files
-- Daily snapshots via Windows Task Scheduler
-- Hard links in the Windows folder are no longer counted twice
-- Russian and English interface
+`EnigmaDisk-portable.exe` is the verified application asset used by Hub; interactive launch now requires Hub. `EnigmaDiskSetup.exe` also requires Hub 1.3.0+. Windows 10/11 x64; the runtime is bundled.
 
 ---
 
-Если Enigma Disk 2.0 уже установлен, выберите **Настройки → Проверить обновления**. Приложение установит обновление поверх текущей версии и перезапустится; снимки и настройки сохранятся.
-
-Для новой установки скачайте **EnigmaDiskSetup.exe** и запустите. Если Windows покажет «Windows защитила ваш компьютер», нажмите **Подробнее → Выполнить в любом случае**.
+Сначала установите или обновите **Enigma Hub до 1.3.0+**, затем обновите Disk через каталог Hub. Перед обновлением закройте Disk самостоятельно; снимки и настройки сохраняются. Ярлыки теперь запускают Disk через Hub, но для работы интернет и аккаунт не нужны. Закрытие Hub не останавливает Disk; снимки по расписанию работают без запущенного Hub. Файл `EnigmaDisk-portable.exe` тоже требует Hub для обычного запуска.

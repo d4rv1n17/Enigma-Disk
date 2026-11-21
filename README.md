@@ -17,6 +17,8 @@
 
 ## Why
 
+**Enigma Disk 2.1+ is part of [Enigma Hub](https://github.com/d4rv1n17/Enigma-Hub/releases/latest).** Install Hub 1.3.0 or newer, then install Disk from its catalog. Direct shortcuts route through Hub. Launch and use installed apps offline without an account; snapshots scheduled by Windows continue without a running Hub. Closing Hub never stops Disk or a scan. Source Debug builds and uninstallation remain independent.
+
 Disk space rarely disappears all at once. Windows updates, browser and messenger caches,
 GPU shader caches and developer tools grow a little every day, until one morning the drive is full
 and nothing looks guilty.
@@ -54,7 +56,7 @@ Tools like WizTree or WinDirStat show what is on the disk **right now**. Enigma 
 **[⬇ Download EnigmaDiskSetup.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDiskSetup.exe)** (latest release) and run it.
 All versions are on the [Releases](../../releases) page.
 
-If Enigma Disk 2.0 is already installed, choose **Settings → Check for updates**. It applies the update in place and restarts the app; you don't need to uninstall it or move your snapshots.
+If Disk is already installed, Hub finds it automatically. Update it from Hub after closing Disk; your snapshots and settings stay in place. **Settings → Open Enigma Hub** opens update management.
 
 - Installs for the current user to `%LOCALAPPDATA%\Programs\Enigma Disk` — **no administrator rights needed**.
 - Adds Start menu and (optionally) desktop shortcuts.
@@ -64,7 +66,7 @@ If Enigma Disk 2.0 is already installed, choose **Settings → Check for updates
 > The executable is not code-signed yet, so Windows SmartScreen may show
 > “Windows protected your PC”. Click **More info → Run anyway**.
 
-Prefer no installation? Grab [EnigmaDisk-portable.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDisk-portable.exe) instead.
+The [EnigmaDisk-portable.exe](https://github.com/d4rv1n17/Enigma-Disk/releases/latest/download/EnigmaDisk-portable.exe) asset is also used by Hub. It requires Hub 1.3.0+ for interactive launch; it is no longer a standalone distribution.
 
 **Requirements:** Windows 10 or 11, 64-bit. The app is self-contained, no .NET installation required.
 

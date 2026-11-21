@@ -73,26 +73,7 @@ public partial class MainWindow : Window
             }
         };
 
-        // Проверка обновлений при запуске: тихо, показываем предложение только когда есть новая версия
-        if (AppState.Settings.CheckUpdates)
-        {
-            _ = Task.Run(async () =>
-            {
-                try
-                {
-                    var found = await Updater.CheckAsync();
-                    if (found != null)
-                        Dispatcher.Invoke(() => Notifier.Raise(new Notifier.Notification
-                        {
-                            Kind = "info",
-                            Title = Loc.F("nt.versionTitle", found.Version),
-                            Body = Loc.F("upd.now", About.Version) + " → " + found.Version,
-                            Navigate = "update",
-                        }));
-                }
-                catch { /* офлайн — молча */ }
-            });
-        }
+        // Product versions, downloads and notifications are managed by Hub.
     }
 
     public async Task PlayIntroAsync(bool preview = false)
@@ -184,8 +165,14 @@ public partial class MainWindow : Window
         NotifBar.Visibility = Visibility.Collapsed;
         if (_notif?.Navigate is string p)
         {
-            if (p == "update" && Updater.Cached is { IsNewer: true } info)
-                new Pages.UpdateWindow(info) { Owner = this }.ShowDialog();
+            if (p == "update")
+            {
+                try { HubLink.Open("updates"); }
+                catch (Exception error)
+                {
+                    MessageBox.Show(this, error.Message, "Enigma Hub", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
             else Go(p);
         }
     }

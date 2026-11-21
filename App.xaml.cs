@@ -6,6 +6,7 @@ namespace EnigmaDisk;
 
 public partial class App : Application
 {
+    private AppInstance? _instance;
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
@@ -23,6 +24,18 @@ public partial class App : Application
         if (e.Args.Any(a => a.Equals("--uninstall", StringComparison.OrdinalIgnoreCase)))
         {
             Uninstaller.Run(quiet: e.Args.Any(a => a.Equals("--quiet", StringComparison.OrdinalIgnoreCase)));
+            Shutdown(0);
+            return;
+        }
+
+        if (!HubLink.EnsureLaunch())
+        {
+            Shutdown(0);
+            return;
+        }
+        _instance = new AppInstance();
+        if (!_instance.OwnsInstance)
+        {
             Shutdown(0);
             return;
         }
@@ -60,5 +73,11 @@ public partial class App : Application
         MessageBox.Show(Loc.F("common.error", e.Exception.Message), "Enigma Disk",
             MessageBoxButton.OK, MessageBoxImage.Warning);
         e.Handled = true;
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        _instance?.Dispose();
+        base.OnExit(e);
     }
 }
